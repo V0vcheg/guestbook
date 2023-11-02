@@ -1,0 +1,4 @@
+[02-Nov-2023 15:58:19 UTC] PHP Fatal error:  Uncaught Error: Class "Symfony\Bundle\FrameworkBundle\Controller\AbstractController" not found in C:\Study\symfony_book\guestbook\src\Controller\ConferenceController.php:9
+Stack trace:
+#0 {main}
+  thrown in C:\Study\symfony_book\guestbook\src\Controller\ConferenceController.php on line 9
