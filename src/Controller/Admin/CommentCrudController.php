@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Controller\Admin;
+
+use App\Entity\Comment;
+use DateTime;
+use Doctrine\ORM\Mapping\Entity;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
+
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+
+class CommentCrudController extends AbstractCrudController
+{
+    public static function getEntityFqcn(): string
+    {
+        return Comment::class;
+    }
+
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInSingular('Conference Comment')
+            ->setEntityLabelInPlural('Conference Comments')
+            ->setSearchFields(['author', 'text', 'email'])
+            ->setDefaultSort(['createdAt' => 'DESC']);
+    }
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add(EntityFilter::new('conference'));
+    }
+    
+    public function configureFields(string $pageName): iterable
+    {
+        yield AssociationField::new('conference');
+        yield TextField::new('author');
+        yield TextField::new('email'); 
+        yield TextField::new('text')->hideOnIndex();
+        yield TextField::new('photoFilename')->onlyOnIndex();
+        $createdAt = DateTimeField::new('createdAt')->setFormTypeOptions([
+            'html5' => true,
+            'years' => range(date('Y'), date('Y') + 5),
+            'widget' => 'single_text',
+        ]);
+        if (Crud::PAGE_INDEX === $pageName) {
+            yield $createdAt->setFormat('yyyy-MM-dd');
+        } else {
+            yield $createdAt;
+        }
+    }
+    
+}
