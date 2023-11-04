@@ -16,7 +16,7 @@
 
             <h4>{{ comment.author }}</h4>
             <small>
-                {{ comment.createdAt|format_datetime('medium', 'short') }}
+                {{ comment.getCreatedAValue|format_datetime('medium', 'short') }}
             </small>
 
             <p>{{ comment.text }}</p>
@@ -31,8 +31,7 @@
     {% else %}
         <div>No comments have been posted yet for this conference.</div>
     {% endif %}
-    <div>
-        <a href="{{ path('homepage') }}">Go back</a>
-    </div>
-    
+    <h2>Add your comment</h2>
+    {{ form(comment_form) }}
+
 {% endblock %}
