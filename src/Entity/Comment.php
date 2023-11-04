@@ -86,6 +86,11 @@ class Comment
         return $this;
     }
 
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getConference(): ?Conference
     {
         return $this->conference;
