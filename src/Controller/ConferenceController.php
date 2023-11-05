@@ -7,6 +7,7 @@ use App\Entity\Conference;
 use App\Form\CommentType;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
+use App\SpamChecker;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -31,7 +32,7 @@ class ConferenceController extends AbstractController
     }
 
     #[Route('/conference/{slug}', name: 'conference')]
-    public function show(Request $request, Conference $conference, CommentRepository $commentRepository, #[Autowire('$photo_dir')] string $photoDir): Response
+    public function show(Request $request, Conference $conference, CommentRepository $commentRepository, SpamChecker $spamChecker, #[Autowire('$photo_dir')] string $photoDir): Response
     {
         $comment = new Comment();
         
@@ -47,7 +48,14 @@ class ConferenceController extends AbstractController
                 $comment->setPhotoFilename($filename);
             }
 
-            $this->entityManager->persist($comment);	
+            $this->entityManager->persist($comment);
+            $context = [
+                'user_ip' => $request->getClientIp(),
+                'user_agent' => $request->headers->get('user-agent'),
+                'referrer' => $request->headers->get('referrer'),
+                'permalink' => $request->getUri()
+            ];
+            	
             $this->entityManager->flush();	
             
             return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);	
